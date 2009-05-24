@@ -1,0 +1,14 @@
+To install script and man page, just run this commands:
+
+	make
+	make install
+
+Also you can change destination directory for wrappers from
+default "/opt/exec-wrapper/bin" to any other directory:
+
+	make wrappersdir=/custom/wrappers/bin
+	make install
+
+Uninstall target also supported:
+
+	make uninstall

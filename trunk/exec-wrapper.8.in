@@ -1,0 +1,134 @@
+.\".\".\".\".\".\".\".\".\".\".\".\".\".\".\".\".\".\".\".\".\".\".\".\".\".\".\
+.\"
+.\" Copyright (C) 2009 Ivan Mironov <mironov.ivan@gmail.com>
+.\"
+.\" This program is free software: you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation, either version 3 of the License, or
+.\" (at your option) any later version.
+.\"
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\" GNU General Public License for more details.
+.\"
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program.  If not, see <http://www.gnu.org/licenses/>.
+.\"
+.\".\".\".\".\".\".\".\".\".\".\".\".\".\".\".\".\".\".\".\".\".\".\".\".\".\".\
+.Dd May 24, 2009
+.Dt SETUID-WRAPPER 8 SMM
+.Os Linux
+.Sh NAME
+.Nm exec-wrapper
+.Nd a simple tool that creates setuid-wrappers for scripts and other
+executables.
+.Sh SYNOPSIS
+.Nm
+.Op Fl hAEs
+.Op Fl d Ar destination-directory
+.Op Fl m Ar mode
+.Op Fl o Ar owner
+.Op Fl g Ar group
+.Op Fl a Ar argument
+.Op Fl e Ar ENVVAR=value
+.Op Fl u Ar ENVVAR
+.Ar real-executable
+.Op Ar wrapper-name
+.Sh DESCRIPTION
+.Nm
+is a simple tool that creates setuid-wrappers for scripts and other
+executables. It can be used to allow users to run scripts with temporarily
+elevated privileges. Just set setuid-bit on script does not work, because
+OS isn't run script itself, but it run an interpreter, which isn't setuid.
+Exec-wrapper creates small genuine executable (not script) with setuid or
+setgid bit that simply executes target script.
+.Pp
+.Nm
+also can be used if you want to transparently run programs with elevated
+priveleges but without using tools like
+.Xr su 1
+or
+.Xr sudo 8
+and without changing file mode bits on system executables.
+.Ss Options
+.Bl -tag -width indent
+.It Fl h
+Print available options and exit.
+.It Fl A
+Shortcut for
+.Fl m
+.Ar 4755
+(-rwsr-xr-x).
+.It Fl E
+Unset all environment variables before running executable.
+.It Fl s
+Don't create wrapper. Just print generated source and exit.
+.It Fl d Ar destination-directory
+The directory, in which wrapper will be created. Default:
+.Pa DEFAULT_DEST .
+.It Fl m Ar mode
+File mode. Default:
+.Ar 4750
+(-rwsr-x---).
+.It Fl o Ar owner
+File owner. Default: current user (id -un).
+.It Fl g Ar group
+File group. Default: current group (id -gn).
+.It Fl a Ar argument
+Add command line argument for executable. Wrapper will add it before any real
+arguments. Can be specified multiple times.
+.It Fl e Ar ENVVAR=value
+Change or add environment variable before running executable. Can be specified
+multiple times.
+.It Fl u Ar ENVVAR
+Unset environment variable before running executable. Can be specified multiple
+times.
+.It Ar real-executable
+Name of the executable file for wrapper or a path to it. If you specify a
+command, then the full path to the executable file for wrapper will be
+retrieved with
+.Xr which 1 .
+You also can specify relative path here, but it's very insecure.
+.It Ar wrapper-name
+Name or path of resulting wrapper. By default wrapper will have the same name
+as the actual executable. If you specify name without a path, then wrapper will
+be created in directory, specified with the
+.Fl d
+option.
+.El
+.Sh ENVIRONMENT
+If you want to transparantely run wrappers instead of real commands, add
+.Pa DEFAULT_DEST
+(or other directory, specified with
+.Fl d )
+to your PATH environment variable:
+.Pp
+PATH="DEFAULT_DEST:$PATH"
+.Sh FILES
+.Bl -ohang
+.It Pa DEFAULT_DEST
+Default directory, in which wrappers will be created.
+.Sh EXAMPLES
+.Bl -tag -width indent
+.It exec-wrapper touch
+Creates setuid-root wrapper for /bin/touch, that can be executed only by the
+members of group "root". Wrapper will be located in
+.Pa DEFAULT_DEST/touch .
+.It exec-wrapper -A du
+Almost as previous, but every user can execute wrapper.
+.It exec-wrapper -g apache /var/www/cgi-bin/script.pl /var/www/cgi-bin/script
+Example usage for CGI-scripts.
+.It exec-wrapper -a -Wall -a -Wextra -e LANG=POSIX -m 0755 gcc
+Creates wrapper, which will run gcc with additional options -Wall and -Wextra,
+with POSIX locale and without setuid/setgid.
+.El
+.Sh SEE ALSO
+.Xr chmod 1 ,
+.Xr chown 1 ,
+.Xr su 1 ,
+.Xr sudo 8
+.Sh AUTHORS
+Ivan Mironov <mironov.ivan@gmail.com>
+.Sh NOTES
+Sorry for my terrible english =).

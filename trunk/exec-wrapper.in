@@ -237,7 +237,8 @@ fi
 [ -e "${OPT_WRAPPER}" ] && die "File \"${OPT_WRAPPER}\" already exists"
 
 # Create directory for temporary files.
-tmp=$( mktemp -d || die "Can't create temporary directory" )
+tmp=$( mktemp -d exec-wrapper.XXXXXXXXXX ) || \
+		die "Can't create temporary directory"
 chmod 0700 "${tmp}"
 
 # Compile wrapper.

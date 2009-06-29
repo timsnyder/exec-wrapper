@@ -13,7 +13,7 @@ INSTALL		?= install
 wrappersdir     ?= /opt/exec-wrapper/bin
 
 # Current script version.
-version		= 1.0
+version		= 1.0.1
 
 # Make rules.
 all: exec-wrapper exec-wrapper.8

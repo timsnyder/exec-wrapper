@@ -18,6 +18,8 @@
 #
 ################################################################################
 
+CC="${CC:-cc}"
+
 OPT_DEST="DEFAULT_DEST"
 OPT_MODE=4750 # -rwsr-x---
 OPT_MODE_A=4755 # -rwsr-xr-x
@@ -165,7 +167,7 @@ checkUtil basename
 checkUtil chmod
 checkUtil install
 checkUtil id
-checkUtil cc
+checkUtil "${CC}"
 
 # Default owner and group.
 OPT_OWNER=$( id -un )
@@ -248,7 +250,7 @@ echo "Owner: \"${OPT_OWNER}\", group: \"${OPT_GROUP}\", mode: \"${OPT_MODE}\""
 WRAPPER_SRC="${tmp}/wrapper.c"
 WRAPPER_BIN="${tmp}/wrapper"
 genSource "${OPT_REAL}" >"${WRAPPER_SRC}"
-cc -o "${WRAPPER_BIN}" "${WRAPPER_SRC}" || die "Can't compile wrapper"
+${CC} -o "${WRAPPER_BIN}" "${WRAPPER_SRC}" || die "Can't compile wrapper"
 
 # Install wrapper.
 install -o "${OPT_OWNER}" -g "${OPT_GROUP}" -m "${OPT_MODE}" -s \
